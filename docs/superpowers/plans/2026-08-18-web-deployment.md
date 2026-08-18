@@ -180,7 +180,7 @@ Then add:
 | A Record | `@` | `185.199.109.153` |
 | A Record | `@` | `185.199.110.153` |
 | A Record | `@` | `185.199.111.153` |
-| CNAME Record | `www` | `devleksandr.github.io.` |
+| CNAME Record | `www` | `carrickane.github.io.` |
 
 - [ ] **Step 6: Wait for propagation and verify**
 
@@ -191,7 +191,7 @@ dig +short www.predictrivals.com
 dig +short predictrivals.com
 ```
 
-Expected: the `www` lookup returns `devleksandr.github.io`'s IPs (resolved through the CNAME);
+Expected: the `www` lookup returns `carrickane.github.io`'s IPs (resolved through the CNAME);
 the apex lookup returns the four `185.199.10x.153` addresses. Once both resolve and
 `https://www.predictrivals.com/` loads the app in a browser, go back to Settings → Pages and
 check "Enforce HTTPS".

@@ -57,7 +57,7 @@ to your GitHub account settings or Namecheap dashboard:
    - Remove Namecheap's default parking-page records on `@` and `www`.
    - Add four A records, host `@`, values `185.199.108.153`, `185.199.109.153`,
      `185.199.110.153`, `185.199.111.153`.
-   - Add one CNAME record, host `www`, value `devleksandr.github.io.`.
+   - Add one CNAME record, host `www`, value `carrickane.github.io.`.
 4. Wait for DNS propagation + GitHub's certificate issuance (minutes to ~24h).
 
 ## 4. Out of scope
