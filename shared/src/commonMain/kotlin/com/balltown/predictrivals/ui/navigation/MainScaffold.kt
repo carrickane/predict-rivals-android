@@ -2,8 +2,10 @@ package com.balltown.predictrivals.ui.navigation
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalContentColor
@@ -35,6 +37,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.balltown.predictrivals.domain.model.Tournament
+import com.balltown.predictrivals.platform.isWebPlatform
+import com.balltown.predictrivals.ui.components.WebHeader
 import com.balltown.predictrivals.ui.profile.ProfileScreen
 import com.balltown.predictrivals.ui.tournament.RequiresCurrentTournament
 import com.balltown.predictrivals.ui.tournament.TournamentTabScreen
@@ -288,11 +292,16 @@ fun MainScaffold(
         }
     }
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        if (maxWidth >= WIDE_LAYOUT_BREAKPOINT) {
-            WideLayout(tabNavController, tabContent)
-        } else {
-            NarrowLayout(tabNavController, tabContent)
+    Column(modifier = Modifier.fillMaxSize()) {
+        if (isWebPlatform()) {
+            WebHeader(onLoggedOut = onLoggedOut)
+        }
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            if (maxWidth >= WIDE_LAYOUT_BREAKPOINT) {
+                WideLayout(tabNavController, tabContent)
+            } else {
+                NarrowLayout(tabNavController, tabContent)
+            }
         }
     }
 }

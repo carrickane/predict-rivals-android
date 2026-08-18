@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import com.balltown.predictrivals.di.CurrentTournamentStore
+import com.balltown.predictrivals.platform.isWebPlatform
 import com.balltown.predictrivals.res.Res
 import com.balltown.predictrivals.res.action_cancel
 import com.balltown.predictrivals.res.action_delete
@@ -117,8 +118,11 @@ fun ProfileScreen(
             HorizontalDivider()
             Spacer(Modifier.height(24.dp))
 
-            Button(onClick = { viewModel.logout(); onLoggedOut() }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.logout_button)) }
-            Spacer(Modifier.height(8.dp))
+            // Web has its own logout action in the top header instead of this button.
+            if (!isWebPlatform()) {
+                Button(onClick = { viewModel.logout(); onLoggedOut() }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.logout_button)) }
+                Spacer(Modifier.height(8.dp))
+            }
             OutlinedButton(
                 onClick = { showDeleteConfirm = true },
                 modifier = Modifier.fillMaxWidth(),
