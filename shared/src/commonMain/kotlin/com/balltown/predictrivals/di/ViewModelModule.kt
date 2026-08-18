@@ -1,0 +1,31 @@
+package com.balltown.predictrivals.di
+
+import com.balltown.predictrivals.ui.auth.AuthViewModel
+import com.balltown.predictrivals.ui.home.CreateTournamentViewModel
+import com.balltown.predictrivals.ui.home.HomeViewModel
+import com.balltown.predictrivals.ui.home.JoinTournamentViewModel
+import com.balltown.predictrivals.ui.profile.ProfileViewModel
+import com.balltown.predictrivals.ui.tournament.TournamentDetailViewModel
+import com.balltown.predictrivals.ui.tournament.calendar.CalendarViewModel
+import com.balltown.predictrivals.ui.tournament.curate.CurateViewModel
+import com.balltown.predictrivals.ui.tournament.live.LiveViewModel
+import com.balltown.predictrivals.ui.tournament.predictions.PredictionsViewModel
+import com.balltown.predictrivals.ui.tournament.standings.StandingsViewModel
+import org.koin.compose.viewmodel.dsl.viewModel
+import org.koin.dsl.module
+
+val viewModelModule = module {
+    viewModel { AuthViewModel(get(), get()) }
+    viewModel { HomeViewModel(get()) }
+    viewModel { CreateTournamentViewModel(get()) }
+    viewModel { JoinTournamentViewModel(get()) }
+    // currentUserId comes from SessionStore, not a nav argument — TournamentDetailViewModel's
+    // constructor has no use for tournamentId, so this needs no parametersOf() at the call site.
+    viewModel { TournamentDetailViewModel(get(), get<SessionStore>().currentUserId.value ?: -1) }
+    viewModel { StandingsViewModel(get()) }
+    viewModel { CalendarViewModel(get()) }
+    viewModel { PredictionsViewModel(get(), get()) }
+    viewModel { CurateViewModel(get(), get()) }
+    viewModel { LiveViewModel(get(), get()) }
+    viewModel { ProfileViewModel(get(), get(), get(), get()) }
+}
