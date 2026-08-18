@@ -15,3 +15,20 @@ data class UserStatsDto(
     val scoredPredictions: Int,
     val accuracy: Double,
 )
+
+@Serializable
+data class RoundRobinStandingDto(
+    val rank: Int,
+    val userId: Int,
+    val name: String,
+    val leaguePoints: Int,
+    val wins: Int,
+    val draws: Int,
+    val losses: Int,
+    val goalsFor: Int,
+    val goalsAgainst: Int,
+    val goalDifference: Int,
+)
+
+@Serializable
+data class RoundRobinTopScorerDto(val rank: Int, val userId: Int, val name: String, val goalsFor: Int)

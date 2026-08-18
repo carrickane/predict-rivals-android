@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.balltown.predictrivals.ui.components.FullScreenCenter
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -27,9 +28,9 @@ fun CurateScreen(tournamentId: Int, from: String, to: String, onRoundCreated: ()
     if (state is CurateUiState.RoundCreated) onRoundCreated()
 
     when (val current = state) {
-        is CurateUiState.Idle, is CurateUiState.Loading -> CircularProgressIndicator()
-        is CurateUiState.Error -> Text(current.message)
-        is CurateUiState.RoundCreated -> Text("Round created.")
+        is CurateUiState.Idle, is CurateUiState.Loading -> FullScreenCenter { CircularProgressIndicator() }
+        is CurateUiState.Error -> FullScreenCenter { Text(current.message) }
+        is CurateUiState.RoundCreated -> FullScreenCenter { Text("Round created.") }
         is CurateUiState.CandidatesLoaded -> Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Text("Pick exactly 9 fixtures (${current.selected.size}/9)")
             if (current.candidates.isEmpty()) {

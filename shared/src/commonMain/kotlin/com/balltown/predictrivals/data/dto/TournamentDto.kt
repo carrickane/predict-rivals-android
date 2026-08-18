@@ -16,7 +16,7 @@ data class TournamentDto(
 )
 
 @Serializable
-data class CreateTournamentRequestDto(val name: String, val playerLimit: Int)
+data class CreateTournamentRequestDto(val name: String, val playerLimit: Int, val format: String = "round_robin")
 
 @Serializable
 data class JoinTournamentRequestDto(val joinCode: String)

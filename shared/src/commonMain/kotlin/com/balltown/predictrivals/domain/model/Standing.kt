@@ -11,3 +11,18 @@ data class UserStats(
     val scoredPredictions: Int,
     val accuracy: Double,
 )
+
+data class RoundRobinStanding(
+    val rank: Int,
+    val userId: Int,
+    val name: String,
+    val leaguePoints: Int,
+    val wins: Int,
+    val draws: Int,
+    val losses: Int,
+    val goalsFor: Int,
+    val goalsAgainst: Int,
+    val goalDifference: Int,
+)
+
+data class RoundRobinTopScorer(val rank: Int, val userId: Int, val name: String, val goalsFor: Int)

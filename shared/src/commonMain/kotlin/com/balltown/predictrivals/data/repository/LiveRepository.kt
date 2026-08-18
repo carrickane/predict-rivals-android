@@ -1,12 +1,13 @@
 package com.balltown.predictrivals.data.repository
 
 import com.balltown.predictrivals.data.api.API_BASE_URL
+import com.balltown.predictrivals.data.dto.LiveRoundScoreDto
 import com.balltown.predictrivals.data.dto.LiveSnapshotDto
-import com.balltown.predictrivals.data.dto.MatchDto
-import com.balltown.predictrivals.data.dto.StandingDto
+import com.balltown.predictrivals.data.dto.LiveStandingDto
+import com.balltown.predictrivals.domain.model.LiveRoundScore
 import com.balltown.predictrivals.domain.model.LiveSnapshot
+import com.balltown.predictrivals.domain.model.LiveStanding
 import com.balltown.predictrivals.domain.model.Match
-import com.balltown.predictrivals.domain.model.Standing
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.websocket.webSocket
@@ -70,6 +71,12 @@ class LiveRepository(private val client: HttpClient) {
 
     private fun LiveSnapshotDto.toDomain() = LiveSnapshot(
         matches.map { Match(it.id, it.homeTeam, it.awayTeam, it.kickoffAt, it.homeScore, it.awayScore, it.status) },
-        standings.map { Standing(it.rank, it.userId, it.name, it.totalPoints, it.exactCount) },
+        standings.map { it.toDomain() },
+        roundScores.map { it.toDomain() },
     )
+
+    private fun LiveStandingDto.toDomain() =
+        LiveStanding(rank, userId, name, totalPoints, exactCount, leaguePoints, wins, draws, losses, goalsFor, goalsAgainst)
+
+    private fun LiveRoundScoreDto.toDomain() = LiveRoundScore(userId, name, roundPoints)
 }

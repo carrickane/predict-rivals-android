@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.balltown.predictrivals.domain.model.Match
 import com.balltown.predictrivals.domain.scoring.isPredictionEditable
+import com.balltown.predictrivals.ui.components.FullScreenCenter
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -29,10 +30,10 @@ fun PredictionsScreen(tournamentId: Int, viewModel: PredictionsViewModel = koinV
     val state by viewModel.state.collectAsState()
 
     when (val current = state) {
-        is PredictionsUiState.Loading -> CircularProgressIndicator()
-        is PredictionsUiState.Error -> Text(current.message)
+        is PredictionsUiState.Loading -> FullScreenCenter { CircularProgressIndicator() }
+        is PredictionsUiState.Error -> FullScreenCenter { Text(current.message) }
         is PredictionsUiState.Loaded -> if (current.round == null) {
-            Text("No round has been set up yet.")
+            FullScreenCenter { Text("No round has been set up yet.") }
         } else {
             Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
                 current.round.matches.forEach { match ->

@@ -11,23 +11,37 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.balltown.predictrivals.ui.components.FullScreenCenter
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LiveScreen(tournamentId: Int, viewModel: LiveViewModel = koinViewModel()) {
     LaunchedEffect(tournamentId) { viewModel.observe(tournamentId) }
-    val snapshot by viewModel.snapshot.collectAsState()
+    val state by viewModel.state.collectAsState()
 
-    val current = snapshot
-    if (current == null) {
-        CircularProgressIndicator()
-    } else {
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            current.matches.forEach { match ->
-                Text("${match.homeTeam} ${match.homeScore ?: "-"} : ${match.awayScore ?: "-"} ${match.awayTeam} (${match.status})")
+    when (val current = state) {
+        is LiveUiState.Loading -> FullScreenCenter { CircularProgressIndicator() }
+        is LiveUiState.Error -> FullScreenCenter { Text(current.message) }
+        is LiveUiState.Loaded -> {
+            val snapshot = current.snapshot
+            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                snapshot.matches.forEach { match ->
+                    Text("${match.homeTeam} ${match.homeScore ?: "-"} : ${match.awayScore ?: "-"} ${match.awayTeam} (${match.status})")
+                }
+                Text("Standings")
+                snapshot.standings.forEach { standing ->
+                    if (standing.isRoundRobin) {
+                        val goalDiff = (standing.goalsFor ?: 0) - (standing.goalsAgainst ?: 0)
+                        Text("#${standing.rank} ${standing.name}: ${standing.leaguePoints} pts (${standing.wins}W ${standing.draws}D ${standing.losses}L, GD $goalDiff)")
+                    } else {
+                        Text("#${standing.rank} ${standing.name}: ${standing.totalPoints}")
+                    }
+                }
+                if (snapshot.roundScores.isNotEmpty()) {
+                    Text("This round")
+                    snapshot.roundScores.forEach { entry -> Text("${entry.name}: ${entry.roundPoints}") }
+                }
             }
-            Text("Standings")
-            current.standings.forEach { standing -> Text("#${standing.rank} ${standing.name}: ${standing.totalPoints}") }
         }
     }
 }

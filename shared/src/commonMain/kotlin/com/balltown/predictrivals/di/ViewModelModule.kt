@@ -22,8 +22,8 @@ val viewModelModule = module {
     // currentUserId comes from SessionStore, not a nav argument — TournamentDetailViewModel's
     // constructor has no use for tournamentId, so this needs no parametersOf() at the call site.
     viewModel { TournamentDetailViewModel(get(), get<SessionStore>().currentUserId.value ?: -1) }
-    viewModel { StandingsViewModel(get()) }
-    viewModel { CalendarViewModel(get()) }
+    viewModel { StandingsViewModel(get(), get()) }
+    viewModel { CalendarViewModel(get(), get(), get()) }
     viewModel { PredictionsViewModel(get(), get()) }
     viewModel { CurateViewModel(get(), get()) }
     viewModel { LiveViewModel(get(), get()) }

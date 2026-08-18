@@ -8,6 +8,7 @@ import com.balltown.predictrivals.data.repository.CalendarRepository
 import com.balltown.predictrivals.data.repository.CurationRepository
 import com.balltown.predictrivals.data.repository.FixtureRepository
 import com.balltown.predictrivals.data.repository.LiveRepository
+import com.balltown.predictrivals.data.repository.PairingsRepository
 import com.balltown.predictrivals.data.repository.PredictionRepository
 import com.balltown.predictrivals.data.repository.StandingsRepository
 import com.balltown.predictrivals.data.repository.TournamentRepository
@@ -31,4 +32,5 @@ val appModule = module {
     single { CurationRepository(get()) }
     single { PredictionRepository(get()) }
     single { LiveRepository(get()) }
+    single { PairingsRepository(get()) }
 }

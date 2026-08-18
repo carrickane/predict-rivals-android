@@ -15,10 +15,10 @@ import io.ktor.http.contentType
 
 class TournamentRepository(private val client: HttpClient) {
 
-    suspend fun create(name: String, playerLimit: Int): Tournament =
+    suspend fun create(name: String, playerLimit: Int, format: String): Tournament =
         client.post("$API_BASE_URL/api/tournaments") {
             contentType(ContentType.Application.Json)
-            setBody(CreateTournamentRequestDto(name, playerLimit))
+            setBody(CreateTournamentRequestDto(name, playerLimit, format))
         }.body<TournamentDto>().toDomain()
 
     suspend fun join(joinCode: String): Tournament =

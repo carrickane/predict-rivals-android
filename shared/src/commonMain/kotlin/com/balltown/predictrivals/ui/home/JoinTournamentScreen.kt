@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -57,7 +59,10 @@ fun JoinTournamentScreen(onJoined: (Tournament) -> Unit, viewModel: JoinTourname
 
     (state as? JoinTournamentUiState.Joined)?.let { onJoined(it.tournament) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+    Column(
+        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Text("Join a tournament")
         OutlinedTextField(value = joinCode, onValueChange = { joinCode = it.uppercase() }, label = { Text("Join code") }, modifier = Modifier.fillMaxWidth())
         Button(onClick = { viewModel.join(joinCode) }, enabled = state !is JoinTournamentUiState.Loading) { Text("Join") }

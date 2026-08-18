@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.balltown.predictrivals.ui.components.FullScreenCenter
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -21,13 +22,22 @@ fun CalendarScreen(tournamentId: Int, viewModel: CalendarViewModel = koinViewMod
     val state by viewModel.state.collectAsState()
 
     when (val current = state) {
-        is CalendarUiState.Loading -> CircularProgressIndicator()
-        is CalendarUiState.Error -> Text(current.message)
+        is CalendarUiState.Loading -> FullScreenCenter { CircularProgressIndicator() }
+        is CalendarUiState.Error -> FullScreenCenter { Text(current.message) }
         is CalendarUiState.Loaded -> if (current.rounds.isEmpty()) {
-            Text("No rounds yet.")
+            FullScreenCenter { Text("No rounds yet.") }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
                 current.rounds.forEach { round ->
+                    val opponent = current.opponentsByRound[round.roundNumber]
+                    if (opponent != null) {
+                        item {
+                            Text(
+                                text = "Round ${round.roundNumber}: vs " + if (opponent.isBotMatch) "BOT" else (opponent.opponentName ?: "Unknown"),
+                                modifier = Modifier.padding(vertical = 4.dp),
+                            )
+                        }
+                    }
                     items(round.matches) { match ->
                         ListItem(
                             headlineContent = { Text("${match.homeTeam} vs ${match.awayTeam}") },
