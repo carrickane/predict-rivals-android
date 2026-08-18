@@ -15,6 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.accept_continue_button
+import com.balltown.predictrivals.res.action_back
+import com.balltown.predictrivals.res.terms_gate_heading
+import com.balltown.predictrivals.res.terms_gate_intro
+import org.jetbrains.compose.resources.stringResource
 
 /** Read-only viewer for a legal document, reached from the Profile screen. */
 @Composable
@@ -27,7 +33,7 @@ fun LegalScreen(title: String, body: String, onBack: () -> Unit) {
         Column(modifier = Modifier.weight(1f).fillMaxSize().verticalScroll(rememberScrollState()).padding(top = 16.dp)) {
             Text(body)
         }
-        TextButton(onClick = onBack) { Text("Back") }
+        TextButton(onClick = onBack) { Text(stringResource(Res.string.action_back)) }
     }
 }
 
@@ -43,9 +49,9 @@ fun TermsGateScreen(onAccept: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("Before you continue", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+        Text(stringResource(Res.string.terms_gate_heading), style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
         Text(
-            "Please review our $PRIVACY_POLICY_TITLE and $TERMS_TITLE. Continuing means you accept both.",
+            stringResource(Res.string.terms_gate_intro, PRIVACY_POLICY_TITLE, TERMS_TITLE),
             modifier = Modifier.padding(top = 12.dp, bottom = 24.dp),
             textAlign = TextAlign.Center,
         )
@@ -55,6 +61,6 @@ fun TermsGateScreen(onAccept: () -> Unit) {
             Text(PRIVACY_POLICY_TITLE, style = MaterialTheme.typography.titleMedium)
             Text(PRIVACY_POLICY_TEXT)
         }
-        Button(onClick = onAccept, modifier = Modifier.padding(top = 24.dp)) { Text("Accept & continue") }
+        Button(onClick = onAccept, modifier = Modifier.padding(top = 24.dp)) { Text(stringResource(Res.string.accept_continue_button)) }
     }
 }

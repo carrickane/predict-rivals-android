@@ -20,6 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.field_email
+import com.balltown.predictrivals.res.login_button
+import com.balltown.predictrivals.res.login_register_prompt
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -36,12 +41,17 @@ fun LoginScreen(onLoggedIn: () -> Unit, onNavigateToRegister: () -> Unit, viewMo
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Predict Rivals")
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text(stringResource(Res.string.field_email)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
         PasswordField(value = password, onValueChange = { password = it })
         Button(onClick = { viewModel.login(email, password) }, modifier = Modifier.fillMaxWidth(), enabled = state !is AuthUiState.Loading) {
-            Text("Log in")
+            Text(stringResource(Res.string.login_button))
         }
-        TextButton(onClick = onNavigateToRegister) { Text("Need an account? Register") }
+        TextButton(onClick = onNavigateToRegister) { Text(stringResource(Res.string.login_register_prompt)) }
         if (state is AuthUiState.Loading) CircularProgressIndicator()
         if (state is AuthUiState.Error) Text((state as AuthUiState.Error).message)
     }

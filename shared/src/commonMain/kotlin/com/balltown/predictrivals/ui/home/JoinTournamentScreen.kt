@@ -23,10 +23,15 @@ import androidx.lifecycle.viewModelScope
 import com.balltown.predictrivals.data.api.ApiException
 import com.balltown.predictrivals.data.repository.TournamentRepository
 import com.balltown.predictrivals.domain.model.Tournament
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.action_join
+import com.balltown.predictrivals.res.field_join_code
+import com.balltown.predictrivals.res.join_tournament_title
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 sealed class JoinTournamentUiState {
@@ -63,9 +68,14 @@ fun JoinTournamentScreen(onJoined: (Tournament) -> Unit, viewModel: JoinTourname
         modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Join a tournament")
-        OutlinedTextField(value = joinCode, onValueChange = { joinCode = it.uppercase() }, label = { Text("Join code") }, modifier = Modifier.fillMaxWidth())
-        Button(onClick = { viewModel.join(joinCode) }, enabled = state !is JoinTournamentUiState.Loading) { Text("Join") }
+        Text(stringResource(Res.string.join_tournament_title))
+        OutlinedTextField(
+            value = joinCode,
+            onValueChange = { joinCode = it.uppercase() },
+            label = { Text(stringResource(Res.string.field_join_code)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Button(onClick = { viewModel.join(joinCode) }, enabled = state !is JoinTournamentUiState.Loading) { Text(stringResource(Res.string.action_join)) }
         if (state is JoinTournamentUiState.Loading) CircularProgressIndicator()
         if (state is JoinTournamentUiState.Error) Text((state as JoinTournamentUiState.Error).message)
     }

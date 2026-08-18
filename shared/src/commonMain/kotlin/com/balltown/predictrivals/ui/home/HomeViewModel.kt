@@ -21,15 +21,20 @@ class HomeViewModel(private val tournamentRepository: TournamentRepository) : Vi
     private val _state = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     init { refresh() }
 
     fun refresh() {
         viewModelScope.launch {
+            _isRefreshing.value = true
             _state.value = try {
                 HomeUiState.Loaded(tournamentRepository.mine())
             } catch (e: ApiException) {
                 HomeUiState.Error(e.message)
             }
+            _isRefreshing.value = false
         }
     }
 }

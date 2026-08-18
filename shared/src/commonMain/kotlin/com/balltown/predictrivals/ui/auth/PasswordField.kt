@@ -12,6 +12,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.field_password
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PasswordField(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier.fillMaxWidth()) {
@@ -20,7 +23,7 @@ fun PasswordField(value: String, onValueChange: (String) -> Unit, modifier: Modi
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text("Password") },
+        label = { Text(stringResource(Res.string.field_password)) },
         visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             IconButton(onClick = { visible = !visible }) {

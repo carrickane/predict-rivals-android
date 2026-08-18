@@ -15,6 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.balltown.predictrivals.di.CurrentTournamentStore
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.create_or_join_prompt
+import com.balltown.predictrivals.res.go_to_tournament_button
+import com.balltown.predictrivals.res.no_tournament_selected
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 /**
@@ -34,16 +39,16 @@ fun RequiresCurrentTournament(onGoToTournamentTab: () -> Unit, content: @Composa
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                "No tournament selected yet",
+                stringResource(Res.string.no_tournament_selected),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
             )
             Text(
-                "Create or join a tournament from the Tournament tab to see this here.",
+                stringResource(Res.string.create_or_join_prompt),
                 modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
                 textAlign = TextAlign.Center,
             )
-            Button(onClick = onGoToTournamentTab) { Text("Go to Tournament") }
+            Button(onClick = onGoToTournamentTab) { Text(stringResource(Res.string.go_to_tournament_button)) }
         }
     } else {
         content(id)

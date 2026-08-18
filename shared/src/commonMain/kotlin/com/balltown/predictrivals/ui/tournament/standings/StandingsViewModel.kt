@@ -15,9 +15,8 @@ import kotlinx.coroutines.launch
 
 sealed class StandingsUiState {
     data object Loading : StandingsUiState()
-    data class LoadedSolo(val standings: List<Standing>, val showingTopScorers: Boolean) : StandingsUiState()
-    data class LoadedRoundRobinStandings(val standings: List<RoundRobinStanding>) : StandingsUiState()
-    data class LoadedRoundRobinTopScorers(val topScorers: List<RoundRobinTopScorer>) : StandingsUiState()
+    data class LoadedSolo(val standings: List<Standing>) : StandingsUiState()
+    data class LoadedRoundRobin(val standings: List<RoundRobinStanding>, val topScorers: List<RoundRobinTopScorer>) : StandingsUiState()
     data class Error(val message: String) : StandingsUiState()
 }
 
@@ -28,23 +27,34 @@ class StandingsViewModel(
     private val _state = MutableStateFlow<StandingsUiState>(StandingsUiState.Loading)
     val state: StateFlow<StandingsUiState> = _state.asStateFlow()
 
-    fun load(tournamentId: Int, topScorers: Boolean = false) {
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    /** solo_points has no separate "goals" ranking worth surfacing — points are the whole story
+     * there, so only round_robin fetches the scorers list alongside the table. */
+    private suspend fun fetch(tournamentId: Int): StandingsUiState = try {
+        val tournament = tournamentRepository.get(tournamentId)
+        if (tournament.format == "round_robin") {
+            StandingsUiState.LoadedRoundRobin(
+                standingsRepository.roundRobinStandings(tournamentId),
+                standingsRepository.roundRobinTopScorers(tournamentId),
+            )
+        } else {
+            StandingsUiState.LoadedSolo(standingsRepository.standings(tournamentId))
+        }
+    } catch (e: ApiException) {
+        StandingsUiState.Error(e.message)
+    }
+
+    fun load(tournamentId: Int) {
+        viewModelScope.launch { _state.value = fetch(tournamentId) }
+    }
+
+    fun refresh(tournamentId: Int) {
         viewModelScope.launch {
-            _state.value = try {
-                val tournament = tournamentRepository.get(tournamentId)
-                if (tournament.format == "round_robin") {
-                    if (topScorers) {
-                        StandingsUiState.LoadedRoundRobinTopScorers(standingsRepository.roundRobinTopScorers(tournamentId))
-                    } else {
-                        StandingsUiState.LoadedRoundRobinStandings(standingsRepository.roundRobinStandings(tournamentId))
-                    }
-                } else {
-                    val standings = if (topScorers) standingsRepository.topScorers(tournamentId) else standingsRepository.standings(tournamentId)
-                    StandingsUiState.LoadedSolo(standings, topScorers)
-                }
-            } catch (e: ApiException) {
-                StandingsUiState.Error(e.message)
-            }
+            _isRefreshing.value = true
+            _state.value = fetch(tournamentId)
+            _isRefreshing.value = false
         }
     }
 }

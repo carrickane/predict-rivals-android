@@ -23,13 +23,24 @@ class TournamentDetailViewModel(
     private val _state = MutableStateFlow<TournamentDetailUiState>(TournamentDetailUiState.Loading)
     val state: StateFlow<TournamentDetailUiState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    private suspend fun fetch(tournamentId: Int): TournamentDetailUiState = try {
+        TournamentDetailUiState.Loaded(tournamentRepository.get(tournamentId), currentUserId)
+    } catch (e: ApiException) {
+        TournamentDetailUiState.Error(e.message)
+    }
+
     fun load(tournamentId: Int) {
+        viewModelScope.launch { _state.value = fetch(tournamentId) }
+    }
+
+    fun refresh(tournamentId: Int) {
         viewModelScope.launch {
-            _state.value = try {
-                TournamentDetailUiState.Loaded(tournamentRepository.get(tournamentId), currentUserId)
-            } catch (e: ApiException) {
-                TournamentDetailUiState.Error(e.message)
-            }
+            _isRefreshing.value = true
+            _state.value = fetch(tournamentId)
+            _isRefreshing.value = false
         }
     }
 

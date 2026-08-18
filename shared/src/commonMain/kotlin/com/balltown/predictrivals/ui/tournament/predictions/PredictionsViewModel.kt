@@ -24,13 +24,24 @@ class PredictionsViewModel(
     private val _state = MutableStateFlow<PredictionsUiState>(PredictionsUiState.Loading)
     val state: StateFlow<PredictionsUiState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    private suspend fun fetch(tournamentId: Int): PredictionsUiState = try {
+        PredictionsUiState.Loaded(calendarRepository.currentRound(tournamentId))
+    } catch (e: ApiException) {
+        PredictionsUiState.Error(e.message)
+    }
+
     fun load(tournamentId: Int) {
+        viewModelScope.launch { _state.value = fetch(tournamentId) }
+    }
+
+    fun refresh(tournamentId: Int) {
         viewModelScope.launch {
-            _state.value = try {
-                PredictionsUiState.Loaded(calendarRepository.currentRound(tournamentId))
-            } catch (e: ApiException) {
-                PredictionsUiState.Error(e.message)
-            }
+            _isRefreshing.value = true
+            _state.value = fetch(tournamentId)
+            _isRefreshing.value = false
         }
     }
 

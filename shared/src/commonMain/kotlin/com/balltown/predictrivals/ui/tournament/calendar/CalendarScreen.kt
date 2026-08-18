@@ -13,37 +13,55 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.match_vs
+import com.balltown.predictrivals.res.no_rounds_yet
+import com.balltown.predictrivals.res.opponent_bot
+import com.balltown.predictrivals.res.opponent_unknown
+import com.balltown.predictrivals.res.round_opponent
+import com.balltown.predictrivals.res.round_status
 import com.balltown.predictrivals.ui.components.FullScreenCenter
+import com.balltown.predictrivals.ui.components.RefreshableScreen
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CalendarScreen(tournamentId: Int, viewModel: CalendarViewModel = koinViewModel()) {
     LaunchedEffect(tournamentId) { viewModel.load(tournamentId) }
     val state by viewModel.state.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    when (val current = state) {
-        is CalendarUiState.Loading -> FullScreenCenter { CircularProgressIndicator() }
-        is CalendarUiState.Error -> FullScreenCenter { Text(current.message) }
-        is CalendarUiState.Loaded -> if (current.rounds.isEmpty()) {
-            FullScreenCenter { Text("No rounds yet.") }
-        } else {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                current.rounds.forEach { round ->
-                    val opponent = current.opponentsByRound[round.roundNumber]
-                    if (opponent != null) {
-                        item {
-                            Text(
-                                text = "Round ${round.roundNumber}: vs " + if (opponent.isBotMatch) "BOT" else (opponent.opponentName ?: "Unknown"),
+    RefreshableScreen(isRefreshing = isRefreshing, onRefresh = { viewModel.refresh(tournamentId) }) {
+        when (val current = state) {
+            is CalendarUiState.Loading -> FullScreenCenter { CircularProgressIndicator() }
+            is CalendarUiState.Error -> FullScreenCenter { Text(current.message) }
+            is CalendarUiState.Loaded -> if (current.rounds.isEmpty()) {
+                FullScreenCenter { Text(stringResource(Res.string.no_rounds_yet)) }
+            } else {
+                val botLabel = stringResource(Res.string.opponent_bot)
+                val unknownLabel = stringResource(Res.string.opponent_unknown)
+                LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                    current.rounds.forEach { round ->
+                        val opponent = current.opponentsByRound[round.roundNumber]
+                        if (opponent != null) {
+                            item {
+                                Text(
+                                    text = stringResource(
+                                        Res.string.round_opponent,
+                                        round.roundNumber,
+                                        if (opponent.isBotMatch) botLabel else (opponent.opponentName ?: unknownLabel),
+                                    ),
+                                    modifier = Modifier.padding(vertical = 4.dp),
+                                )
+                            }
+                        }
+                        items(round.matches) { match ->
+                            ListItem(
+                                headlineContent = { Text(stringResource(Res.string.match_vs, match.homeTeam, match.awayTeam)) },
+                                supportingContent = { Text(stringResource(Res.string.round_status, round.roundNumber, match.status)) },
                                 modifier = Modifier.padding(vertical = 4.dp),
                             )
                         }
-                    }
-                    items(round.matches) { match ->
-                        ListItem(
-                            headlineContent = { Text("${match.homeTeam} vs ${match.awayTeam}") },
-                            supportingContent = { Text("Round ${round.roundNumber} · ${match.status}") },
-                            modifier = Modifier.padding(vertical = 4.dp),
-                        )
                     }
                 }
             }

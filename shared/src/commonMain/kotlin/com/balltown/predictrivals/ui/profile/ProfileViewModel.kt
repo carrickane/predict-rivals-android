@@ -36,8 +36,17 @@ class ProfileViewModel(
     private val _state = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private val _deleteAccountState = MutableStateFlow<DeleteAccountState>(DeleteAccountState.Idle)
     val deleteAccountState: StateFlow<DeleteAccountState> = _deleteAccountState.asStateFlow()
+
+    private suspend fun fetch(tournamentId: Int, userId: Int): ProfileUiState = try {
+        ProfileUiState.Loaded(standingsRepository.userStats(tournamentId, userId))
+    } catch (e: ApiException) {
+        ProfileUiState.Error(e.message)
+    }
 
     fun load(tournamentId: Int?) {
         val userId = sessionStore.currentUserId.value
@@ -45,13 +54,19 @@ class ProfileViewModel(
             _state.value = ProfileUiState.Loaded(stats = null)
             return
         }
-        _state.value = ProfileUiState.Loading
+        viewModelScope.launch { _state.value = fetch(tournamentId, userId) }
+    }
+
+    fun refresh(tournamentId: Int?) {
+        val userId = sessionStore.currentUserId.value
+        if (tournamentId == null || userId == null) {
+            _state.value = ProfileUiState.Loaded(stats = null)
+            return
+        }
         viewModelScope.launch {
-            _state.value = try {
-                ProfileUiState.Loaded(standingsRepository.userStats(tournamentId, userId))
-            } catch (e: ApiException) {
-                ProfileUiState.Error(e.message)
-            }
+            _isRefreshing.value = true
+            _state.value = fetch(tournamentId, userId)
+            _isRefreshing.value = false
         }
     }
 

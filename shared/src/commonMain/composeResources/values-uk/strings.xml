@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- Common actions -->
+    <string name="action_create">Створити</string>
+    <string name="action_join">Приєднатися</string>
+    <string name="action_save">Зберегти</string>
+    <string name="action_cancel">Скасувати</string>
+    <string name="action_back">Назад</string>
+    <string name="action_delete">Видалити</string>
+
+    <!-- Auth -->
+    <string name="field_email">Електронна пошта</string>
+    <string name="field_password">Пароль</string>
+    <string name="field_name">Ім\'я</string>
+    <string name="login_button">Увійти</string>
+    <string name="login_register_prompt">Немає акаунту? Зареєструватися</string>
+    <string name="register_title">Створення акаунту</string>
+    <string name="register_button">Зареєструватися</string>
+    <string name="register_login_prompt">Вже є акаунт? Увійти</string>
+
+    <!-- Join / Create tournament -->
+    <string name="join_tournament_title">Приєднатися до турніру</string>
+    <string name="field_join_code">Код приєднання</string>
+    <string name="create_tournament_title">Новий турнір</string>
+    <string name="field_player_limit">Ліміт гравців (2-50)</string>
+    <string name="field_tournament_type">Тип турніру</string>
+    <string name="format_round_robin">Кругова система</string>
+    <string name="format_solo">Одиночний</string>
+    <string name="format_playoff_soon">Плей-офф (скоро)</string>
+
+    <!-- Tournament tab -->
+    <string name="tournament_tab_title">Турнір</string>
+    <string name="search_my_tournaments">Пошук моїх турнірів</string>
+    <string name="no_tournaments_yet">Ще немає турнірів — створіть або приєднайтеся до одного вище.</string>
+    <string name="tournament_players_status">%1$d/%2$d гравців · %3$s</string>
+    <string name="label_current"> · поточний</string>
+    <string name="join_code_label">Код приєднання: %1$s</string>
+    <string name="action_predictions">Прогнози</string>
+    <string name="action_share">Поділитися</string>
+    <string name="action_start_early">Почати достроково</string>
+    <string name="action_curate_matches">Обрати матчі</string>
+    <string name="share_invite_message">Приєднуйся до мого турніру Predict Rivals «%1$s»! Використай код: %2$s</string>
+
+    <!-- Requires current tournament -->
+    <string name="no_tournament_selected">Турнір ще не обрано</string>
+    <string name="create_or_join_prompt">Створіть або приєднайтеся до турніру на вкладці «Турнір», щоб побачити це тут.</string>
+    <string name="go_to_tournament_button">Перейти до турніру</string>
+
+    <!-- Calendar -->
+    <string name="no_rounds_yet">Ще немає раундів.</string>
+    <string name="match_vs">%1$s проти %2$s</string>
+    <string name="round_status">Раунд %1$d · %2$s</string>
+    <string name="round_opponent">Раунд %1$d: проти %2$s</string>
+    <string name="opponent_bot">БОТ</string>
+    <string name="opponent_unknown">Невідомо</string>
+
+    <!-- Live -->
+    <string name="standings_heading">Турнірна таблиця</string>
+    <string name="standings_solo_row">#%1$d %2$s: %3$d</string>
+    <string name="standings_roundrobin_row">#%1$d %2$s: %3$d очок (%4$dВ %5$dН %6$dП, РМ %7$d)</string>
+    <string name="this_round_heading">Цей раунд</string>
+    <string name="round_score_row">%1$s: %2$d</string>
+
+    <!-- Standings screen -->
+    <string name="top_scorers_label">Найкращі бомбардири</string>
+    <string name="rank_name_headline">#%1$d %2$s</string>
+    <string name="standings_solo_supporting">%1$d очок · %2$d точних</string>
+    <string name="standings_topscorers_supporting">%1$d м\'ячів</string>
+    <string name="table_header_player">Гравець</string>
+    <string name="table_header_games">І</string>
+    <string name="table_header_wins">В</string>
+    <string name="table_header_draws">Н</string>
+    <string name="table_header_losses">П</string>
+    <string name="table_header_goals_for">ЗМ</string>
+    <string name="table_header_goals_against">ПМ</string>
+    <string name="table_header_goal_diff">РМ</string>
+    <string name="table_header_points">Очки</string>
+
+    <!-- Curate -->
+    <string name="round_created_message">Раунд створено.</string>
+    <string name="pick_fixtures_title">Оберіть рівно 9 матчів (%1$d/9)</string>
+    <string name="no_fixtures_available">Наразі немає матчів для цього періоду.</string>
+    <string name="fixture_row">%1$s проти %2$s (%3$s)</string>
+    <string name="create_round_button">Створити раунд</string>
+
+    <!-- Predictions -->
+    <string name="no_round_setup_yet">Раунд ще не налаштовано.</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Профіль</string>
+    <string name="select_tournament_prompt">Оберіть турнір, щоб побачити свою статистику тут.</string>
+    <string name="profile_stats_points">%1$d очок · %2$d точних</string>
+    <string name="profile_stats_predictions">%1$d/%2$d прогнозів оцінено</string>
+    <string name="profile_stats_accuracy">Точність: %1$s</string>
+    <string name="privacy_policy_button">Політика конфіденційності</string>
+    <string name="terms_button">Умови використання</string>
+    <string name="send_feedback_button">Надіслати відгук</string>
+    <string name="logout_button">Вийти</string>
+    <string name="delete_account_button">Видалити акаунт</string>
+    <string name="delete_account_dialog_title">Видалити акаунт?</string>
+    <string name="delete_account_dialog_text">Це остаточно видалить ваш акаунт, турніри, якими ви володієте, та історію ваших прогнозів. Це неможливо скасувати.</string>
+
+    <!-- Legal screen chrome (not the legal document body text itself, which stays English-only placeholder copy) -->
+    <string name="terms_gate_heading">Перш ніж продовжити</string>
+    <string name="terms_gate_intro">Будь ласка, ознайомтеся з нашими %1$s та %2$s. Продовжуючи, ви приймаєте обидва документи.</string>
+    <string name="accept_continue_button">Прийняти й продовжити</string>
+
+    <!-- Bottom nav tabs -->
+    <string name="tab_calendar">Календар</string>
+    <string name="tab_live">Наживо</string>
+    <string name="tab_tournament">Турнір</string>
+    <string name="tab_standings">Таблиця</string>
+    <string name="tab_profile">Профіль</string>
+</resources>

@@ -27,10 +27,21 @@ import androidx.lifecycle.viewModelScope
 import com.balltown.predictrivals.data.api.ApiException
 import com.balltown.predictrivals.data.repository.TournamentRepository
 import com.balltown.predictrivals.domain.model.Tournament
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.action_create
+import com.balltown.predictrivals.res.create_tournament_title
+import com.balltown.predictrivals.res.field_name
+import com.balltown.predictrivals.res.field_player_limit
+import com.balltown.predictrivals.res.field_tournament_type
+import com.balltown.predictrivals.res.format_playoff_soon
+import com.balltown.predictrivals.res.format_round_robin
+import com.balltown.predictrivals.res.format_solo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 sealed class CreateTournamentUiState {
@@ -56,12 +67,12 @@ class CreateTournamentViewModel(private val tournamentRepository: TournamentRepo
     }
 }
 
-private data class TournamentFormatOption(val value: String, val label: String, val enabled: Boolean)
+private data class TournamentFormatOption(val value: String, val labelRes: StringResource, val enabled: Boolean)
 
 private val FORMAT_OPTIONS = listOf(
-    TournamentFormatOption("round_robin", "Round robin", enabled = true),
-    TournamentFormatOption("solo_points", "Solo", enabled = true),
-    TournamentFormatOption("playoff", "Playoff (coming soon)", enabled = false),
+    TournamentFormatOption("round_robin", Res.string.format_round_robin, enabled = true),
+    TournamentFormatOption("solo_points", Res.string.format_solo, enabled = true),
+    TournamentFormatOption("playoff", Res.string.format_playoff_soon, enabled = false),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,27 +90,32 @@ fun CreateTournamentScreen(onCreated: (Tournament) -> Unit, viewModel: CreateTou
         modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("New tournament")
-        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
+        Text(stringResource(Res.string.create_tournament_title))
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text(stringResource(Res.string.field_name)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
         OutlinedTextField(
             value = playerLimit,
             onValueChange = { playerLimit = it.filter(Char::isDigit) },
-            label = { Text("Player limit (2-50)") },
+            label = { Text(stringResource(Res.string.field_player_limit)) },
             modifier = Modifier.fillMaxWidth(),
         )
         ExposedDropdownMenuBox(expanded = formatMenuExpanded, onExpandedChange = { formatMenuExpanded = it }) {
             OutlinedTextField(
-                value = selectedFormat.label,
+                value = stringResource(selectedFormat.labelRes),
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Tournament type") },
+                label = { Text(stringResource(Res.string.field_tournament_type)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = formatMenuExpanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor(),
             )
             ExposedDropdownMenu(expanded = formatMenuExpanded, onDismissRequest = { formatMenuExpanded = false }) {
                 FORMAT_OPTIONS.forEach { option ->
                     DropdownMenuItem(
-                        text = { Text(option.label) },
+                        text = { Text(stringResource(option.labelRes)) },
                         enabled = option.enabled,
                         onClick = {
                             selectedFormat = option
@@ -112,7 +128,7 @@ fun CreateTournamentScreen(onCreated: (Tournament) -> Unit, viewModel: CreateTou
         Button(
             onClick = { playerLimit.toIntOrNull()?.let { viewModel.create(name, it, selectedFormat.value) } },
             enabled = state !is CreateTournamentUiState.Loading,
-        ) { Text("Create") }
+        ) { Text(stringResource(Res.string.action_create)) }
         if (state is CreateTournamentUiState.Loading) CircularProgressIndicator()
         if (state is CreateTournamentUiState.Error) Text((state as CreateTournamentUiState.Error).message)
     }

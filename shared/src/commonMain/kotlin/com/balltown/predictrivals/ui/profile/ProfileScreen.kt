@@ -29,6 +29,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import com.balltown.predictrivals.di.CurrentTournamentStore
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.action_cancel
+import com.balltown.predictrivals.res.action_delete
+import com.balltown.predictrivals.res.delete_account_button
+import com.balltown.predictrivals.res.delete_account_dialog_text
+import com.balltown.predictrivals.res.delete_account_dialog_title
+import com.balltown.predictrivals.res.logout_button
+import com.balltown.predictrivals.res.privacy_policy_button
+import com.balltown.predictrivals.res.profile_stats_accuracy
+import com.balltown.predictrivals.res.profile_stats_points
+import com.balltown.predictrivals.res.profile_stats_predictions
+import com.balltown.predictrivals.res.profile_title
+import com.balltown.predictrivals.res.select_tournament_prompt
+import com.balltown.predictrivals.res.send_feedback_button
+import com.balltown.predictrivals.res.terms_button
+import com.balltown.predictrivals.ui.components.RefreshableScreen
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -49,76 +66,83 @@ fun ProfileScreen(
     LaunchedEffect(currentTournamentId) { viewModel.load(currentTournamentId) }
 
     val state by viewModel.state.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
     val deleteAccountState by viewModel.deleteAccountState.collectAsState()
 
     LaunchedEffect(deleteAccountState) {
         if (deleteAccountState is DeleteAccountState.Deleted) onLoggedOut()
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    RefreshableScreen(
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.refresh(currentTournamentId) },
+        modifier = Modifier.fillMaxSize().safeDrawingPadding(),
     ) {
-        Text("Profile", style = MaterialTheme.typography.headlineSmall)
-        Spacer(Modifier.height(16.dp))
+        Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(stringResource(Res.string.profile_title), style = MaterialTheme.typography.headlineSmall)
+            Spacer(Modifier.height(16.dp))
 
-        when (val current = state) {
-            is ProfileUiState.Loading -> CircularProgressIndicator()
-            is ProfileUiState.Error -> Text(current.message)
-            is ProfileUiState.Loaded -> {
-                val stats = current.stats
-                if (stats == null) {
-                    Text("Select a tournament to see your stats here.")
-                } else {
-                    Text("${stats.totalPoints} points · ${stats.exactCount} exact")
-                    Text("${stats.scoredPredictions}/${stats.totalPredictions} predictions scored")
-                    Text("Accuracy: ${stats.accuracy}")
+            when (val current = state) {
+                is ProfileUiState.Loading -> CircularProgressIndicator()
+                is ProfileUiState.Error -> Text(current.message)
+                is ProfileUiState.Loaded -> {
+                    val stats = current.stats
+                    if (stats == null) {
+                        Text(stringResource(Res.string.select_tournament_prompt))
+                    } else {
+                        Text(stringResource(Res.string.profile_stats_points, stats.totalPoints, stats.exactCount))
+                        Text(stringResource(Res.string.profile_stats_predictions, stats.scoredPredictions, stats.totalPredictions))
+                        Text(stringResource(Res.string.profile_stats_accuracy, stats.accuracy.toString()))
+                    }
                 }
             }
-        }
 
-        Spacer(Modifier.height(24.dp))
-        HorizontalDivider()
-        Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(24.dp))
 
-        OutlinedButton(onClick = onOpenPrivacyPolicy, modifier = Modifier.fillMaxWidth()) { Text("Privacy Policy") }
-        Spacer(Modifier.height(8.dp))
-        OutlinedButton(onClick = onOpenTerms, modifier = Modifier.fillMaxWidth()) { Text("Terms & Conditions") }
-        Spacer(Modifier.height(8.dp))
-        OutlinedButton(
-            onClick = { uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=Predict%20Rivals%20feedback") },
-            modifier = Modifier.fillMaxWidth(),
-        ) { Text("Send feedback") }
+            OutlinedButton(onClick = onOpenPrivacyPolicy, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.privacy_policy_button)) }
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(onClick = onOpenTerms, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.terms_button)) }
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { uriHandler.openUri("mailto:$FEEDBACK_EMAIL?subject=Predict%20Rivals%20feedback") },
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text(stringResource(Res.string.send_feedback_button)) }
 
-        Spacer(Modifier.height(24.dp))
-        HorizontalDivider()
-        Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(24.dp))
 
-        Button(onClick = { viewModel.logout(); onLoggedOut() }, modifier = Modifier.fillMaxWidth()) { Text("Log out") }
-        Spacer(Modifier.height(8.dp))
-        OutlinedButton(
-            onClick = { showDeleteConfirm = true },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-        ) { Text("Delete account") }
+            Button(onClick = { viewModel.logout(); onLoggedOut() }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.logout_button)) }
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { showDeleteConfirm = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            ) { Text(stringResource(Res.string.delete_account_button)) }
 
-        if (deleteAccountState is DeleteAccountState.Error) {
-            Text((deleteAccountState as DeleteAccountState.Error).message, color = MaterialTheme.colorScheme.error)
+            if (deleteAccountState is DeleteAccountState.Error) {
+                Text((deleteAccountState as DeleteAccountState.Error).message, color = MaterialTheme.colorScheme.error)
+            }
         }
     }
 
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Delete account?") },
-            text = { Text("This permanently deletes your account, tournaments you own, and your prediction history. This can't be undone.") },
+            title = { Text(stringResource(Res.string.delete_account_dialog_title)) },
+            text = { Text(stringResource(Res.string.delete_account_dialog_text)) },
             confirmButton = {
                 TextButton(
                     onClick = { showDeleteConfirm = false; viewModel.deleteAccount() },
                     enabled = deleteAccountState !is DeleteAccountState.Loading,
-                ) { Text("Delete") }
+                ) { Text(stringResource(Res.string.action_delete)) }
             },
-            dismissButton = { TextButton(onClick = { showDeleteConfirm = false }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { showDeleteConfirm = false }) { Text(stringResource(Res.string.action_cancel)) } },
         )
     }
 }

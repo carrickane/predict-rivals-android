@@ -1,5 +1,13 @@
 package com.balltown.predictrivals.ui.navigation
 
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.tab_calendar
+import com.balltown.predictrivals.res.tab_live
+import com.balltown.predictrivals.res.tab_profile
+import com.balltown.predictrivals.res.tab_standings
+import com.balltown.predictrivals.res.tab_tournament
+import org.jetbrains.compose.resources.StringResource
+
 sealed class Routes(val route: String) {
     data object Login : Routes("login")
     data object Register : Routes("register")
@@ -23,12 +31,12 @@ sealed class Routes(val route: String) {
 }
 
 /** The 5 bottom-nav destinations, nested inside [Routes.Main]'s own NavHost. */
-sealed class MainTab(val route: String, val label: String) {
-    data object Calendar : MainTab("tab/calendar", "Calendar")
-    data object Live : MainTab("tab/live", "Live")
-    data object Tournament : MainTab("tab/tournament", "Tournament")
-    data object Standings : MainTab("tab/standings", "Standings")
-    data object Profile : MainTab("tab/profile", "Profile")
+sealed class MainTab(val route: String, val labelRes: StringResource) {
+    data object Calendar : MainTab("tab/calendar", Res.string.tab_calendar)
+    data object Live : MainTab("tab/live", Res.string.tab_live)
+    data object Tournament : MainTab("tab/tournament", Res.string.tab_tournament)
+    data object Standings : MainTab("tab/standings", Res.string.tab_standings)
+    data object Profile : MainTab("tab/profile", Res.string.tab_profile)
 
     companion object {
         // Deferred with `by lazy`: building this list eagerly in the companion's own <clinit>

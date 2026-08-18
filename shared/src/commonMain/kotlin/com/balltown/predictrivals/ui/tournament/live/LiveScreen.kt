@@ -11,7 +11,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.balltown.predictrivals.res.Res
+import com.balltown.predictrivals.res.round_score_row
+import com.balltown.predictrivals.res.standings_heading
+import com.balltown.predictrivals.res.standings_roundrobin_row
+import com.balltown.predictrivals.res.standings_solo_row
+import com.balltown.predictrivals.res.this_round_heading
 import com.balltown.predictrivals.ui.components.FullScreenCenter
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -28,18 +35,31 @@ fun LiveScreen(tournamentId: Int, viewModel: LiveViewModel = koinViewModel()) {
                 snapshot.matches.forEach { match ->
                     Text("${match.homeTeam} ${match.homeScore ?: "-"} : ${match.awayScore ?: "-"} ${match.awayTeam} (${match.status})")
                 }
-                Text("Standings")
+                Text(stringResource(Res.string.standings_heading))
                 snapshot.standings.forEach { standing ->
                     if (standing.isRoundRobin) {
                         val goalDiff = (standing.goalsFor ?: 0) - (standing.goalsAgainst ?: 0)
-                        Text("#${standing.rank} ${standing.name}: ${standing.leaguePoints} pts (${standing.wins}W ${standing.draws}D ${standing.losses}L, GD $goalDiff)")
+                        Text(
+                            stringResource(
+                                Res.string.standings_roundrobin_row,
+                                standing.rank,
+                                standing.name,
+                                standing.leaguePoints ?: 0,
+                                standing.wins ?: 0,
+                                standing.draws ?: 0,
+                                standing.losses ?: 0,
+                                goalDiff,
+                            ),
+                        )
                     } else {
-                        Text("#${standing.rank} ${standing.name}: ${standing.totalPoints}")
+                        Text(stringResource(Res.string.standings_solo_row, standing.rank, standing.name, standing.totalPoints ?: 0))
                     }
                 }
                 if (snapshot.roundScores.isNotEmpty()) {
-                    Text("This round")
-                    snapshot.roundScores.forEach { entry -> Text("${entry.name}: ${entry.roundPoints}") }
+                    Text(stringResource(Res.string.this_round_heading))
+                    snapshot.roundScores.forEach { entry ->
+                        Text(stringResource(Res.string.round_score_row, entry.name, entry.roundPoints))
+                    }
                 }
             }
         }

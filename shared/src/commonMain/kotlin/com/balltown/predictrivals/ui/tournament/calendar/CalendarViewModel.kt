@@ -27,20 +27,31 @@ class CalendarViewModel(
     private val _state = MutableStateFlow<CalendarUiState>(CalendarUiState.Loading)
     val state: StateFlow<CalendarUiState> = _state.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    private suspend fun fetch(tournamentId: Int): CalendarUiState = try {
+        val rounds = calendarRepository.calendar(tournamentId)
+        val tournament = tournamentRepository.get(tournamentId)
+        val opponentsByRound = if (tournament.format == "round_robin") {
+            pairingsRepository.mySchedule(tournamentId).associateBy { it.roundNumber }
+        } else {
+            emptyMap()
+        }
+        CalendarUiState.Loaded(rounds, opponentsByRound)
+    } catch (e: ApiException) {
+        CalendarUiState.Error(e.message)
+    }
+
     fun load(tournamentId: Int) {
+        viewModelScope.launch { _state.value = fetch(tournamentId) }
+    }
+
+    fun refresh(tournamentId: Int) {
         viewModelScope.launch {
-            _state.value = try {
-                val rounds = calendarRepository.calendar(tournamentId)
-                val tournament = tournamentRepository.get(tournamentId)
-                val opponentsByRound = if (tournament.format == "round_robin") {
-                    pairingsRepository.mySchedule(tournamentId).associateBy { it.roundNumber }
-                } else {
-                    emptyMap()
-                }
-                CalendarUiState.Loaded(rounds, opponentsByRound)
-            } catch (e: ApiException) {
-                CalendarUiState.Error(e.message)
-            }
+            _isRefreshing.value = true
+            _state.value = fetch(tournamentId)
+            _isRefreshing.value = false
         }
     }
 }

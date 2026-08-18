@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- Common actions -->
+    <string name="action_create">Create</string>
+    <string name="action_join">Join</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_back">Back</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- Auth -->
+    <string name="field_email">Email</string>
+    <string name="field_password">Password</string>
+    <string name="field_name">Name</string>
+    <string name="login_button">Log in</string>
+    <string name="login_register_prompt">Need an account? Register</string>
+    <string name="register_title">Create your account</string>
+    <string name="register_button">Register</string>
+    <string name="register_login_prompt">Already have an account? Log in</string>
+
+    <!-- Join / Create tournament -->
+    <string name="join_tournament_title">Join a tournament</string>
+    <string name="field_join_code">Join code</string>
+    <string name="create_tournament_title">New tournament</string>
+    <string name="field_player_limit">Player limit (2-50)</string>
+    <string name="field_tournament_type">Tournament type</string>
+    <string name="format_round_robin">Round robin</string>
+    <string name="format_solo">Solo</string>
+    <string name="format_playoff_soon">Playoff (coming soon)</string>
+
+    <!-- Tournament tab -->
+    <string name="tournament_tab_title">Tournament</string>
+    <string name="search_my_tournaments">Search my tournaments</string>
+    <string name="no_tournaments_yet">No tournaments yet — create or join one above.</string>
+    <string name="tournament_players_status">%1$d/%2$d players · %3$s</string>
+    <string name="label_current"> · current</string>
+    <string name="join_code_label">Join code: %1$s</string>
+    <string name="action_predictions">Predictions</string>
+    <string name="action_share">Share</string>
+    <string name="action_start_early">Start early</string>
+    <string name="action_curate_matches">Curate matches</string>
+    <string name="share_invite_message">Join my Predict Rivals tournament "%1$s"! Use code: %2$s</string>
+
+    <!-- Requires current tournament -->
+    <string name="no_tournament_selected">No tournament selected yet</string>
+    <string name="create_or_join_prompt">Create or join a tournament from the Tournament tab to see this here.</string>
+    <string name="go_to_tournament_button">Go to Tournament</string>
+
+    <!-- Calendar -->
+    <string name="no_rounds_yet">No rounds yet.</string>
+    <string name="match_vs">%1$s vs %2$s</string>
+    <string name="round_status">Round %1$d · %2$s</string>
+    <string name="round_opponent">Round %1$d: vs %2$s</string>
+    <string name="opponent_bot">BOT</string>
+    <string name="opponent_unknown">Unknown</string>
+
+    <!-- Live -->
+    <string name="standings_heading">Standings</string>
+    <string name="standings_solo_row">#%1$d %2$s: %3$d</string>
+    <string name="standings_roundrobin_row">#%1$d %2$s: %3$d pts (%4$dW %5$dD %6$dL, GD %7$d)</string>
+    <string name="this_round_heading">This round</string>
+    <string name="round_score_row">%1$s: %2$d</string>
+
+    <!-- Standings screen -->
+    <string name="top_scorers_label">Top scorers</string>
+    <string name="rank_name_headline">#%1$d %2$s</string>
+    <string name="standings_solo_supporting">%1$d pts · %2$d exact</string>
+    <string name="standings_topscorers_supporting">%1$d goals</string>
+    <string name="table_header_player">Player</string>
+    <string name="table_header_games">GP</string>
+    <string name="table_header_wins">W</string>
+    <string name="table_header_draws">D</string>
+    <string name="table_header_losses">L</string>
+    <string name="table_header_goals_for">GF</string>
+    <string name="table_header_goals_against">GA</string>
+    <string name="table_header_goal_diff">GD</string>
+    <string name="table_header_points">Pts</string>
+
+    <!-- Curate -->
+    <string name="round_created_message">Round created.</string>
+    <string name="pick_fixtures_title">Pick exactly 9 fixtures (%1$d/9)</string>
+    <string name="no_fixtures_available">No fixtures available for this date range yet.</string>
+    <string name="fixture_row">%1$s vs %2$s (%3$s)</string>
+    <string name="create_round_button">Create round</string>
+
+    <!-- Predictions -->
+    <string name="no_round_setup_yet">No round has been set up yet.</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="select_tournament_prompt">Select a tournament to see your stats here.</string>
+    <string name="profile_stats_points">%1$d points · %2$d exact</string>
+    <string name="profile_stats_predictions">%1$d/%2$d predictions scored</string>
+    <string name="profile_stats_accuracy">Accuracy: %1$s</string>
+    <string name="privacy_policy_button">Privacy Policy</string>
+    <string name="terms_button">Terms &amp; Conditions</string>
+    <string name="send_feedback_button">Send feedback</string>
+    <string name="logout_button">Log out</string>
+    <string name="delete_account_button">Delete account</string>
+    <string name="delete_account_dialog_title">Delete account?</string>
+    <string name="delete_account_dialog_text">This permanently deletes your account, tournaments you own, and your prediction history. This can\'t be undone.</string>
+
+    <!-- Legal screen chrome (not the legal document body text itself, which stays English-only placeholder copy) -->
+    <string name="terms_gate_heading">Before you continue</string>
+    <string name="terms_gate_intro">Please review our %1$s and %2$s. Continuing means you accept both.</string>
+    <string name="accept_continue_button">Accept &amp; continue</string>
+
+    <!-- Bottom nav tabs -->
+    <string name="tab_calendar">Calendar</string>
+    <string name="tab_live">Live</string>
+    <string name="tab_tournament">Tournament</string>
+    <string name="tab_standings">Standings</string>
+    <string name="tab_profile">Profile</string>
+</resources>
