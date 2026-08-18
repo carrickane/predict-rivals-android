@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.balltown.predictrivals.di.CurrentTournamentStore
 import com.balltown.predictrivals.domain.model.Tournament
+import com.balltown.predictrivals.platform.rememberShareAction
 import com.balltown.predictrivals.ui.home.HomeUiState
 import com.balltown.predictrivals.ui.home.HomeViewModel
 import org.koin.compose.koinInject
@@ -132,6 +133,8 @@ private fun CurrentTournamentCard(
     onOpenPredictions: (Tournament) -> Unit,
     onOpenCurate: (Tournament) -> Unit,
 ) {
+    val shareAction = rememberShareAction()
+
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -149,6 +152,11 @@ private fun CurrentTournamentCard(
                     Spacer(Modifier.height(12.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(onClick = { onOpenPredictions(tournament) }) { Text("Predictions") }
+                        Button(
+                            onClick = {
+                                shareAction("Join my Predict Rivals tournament \"${tournament.name}\"! Use code: ${tournament.joinCode}")
+                            },
+                        ) { Text("Share") }
                         if (isOwner && tournament.isOpen) {
                             Button(onClick = onStartEarly) { Text("Start early") }
                         }
