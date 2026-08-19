@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,7 +37,7 @@ fun WebHeader(onLoggedOut: () -> Unit) {
     val currentTournamentStore = koinInject<CurrentTournamentStore>()
 
     Box(
-        modifier = Modifier.fillMaxWidth().height(64.dp).background(MaterialTheme.colorScheme.surface).padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth().height(64.dp).background(MaterialTheme.colorScheme.primary).padding(horizontal = 16.dp),
     ) {
         Row(
             modifier = Modifier.align(Alignment.Center),
@@ -44,7 +45,12 @@ fun WebHeader(onLoggedOut: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Image(painter = painterResource(Res.drawable.app_logo), contentDescription = null, modifier = Modifier.size(36.dp))
-            Text("PREDICT RIVALS", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(
+                "PREDICT RIVALS",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
         }
         TextButton(
             onClick = {
@@ -53,6 +59,7 @@ fun WebHeader(onLoggedOut: () -> Unit) {
                 currentTournamentStore.clear()
                 onLoggedOut()
             },
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary),
             modifier = Modifier.align(Alignment.CenterEnd),
         ) { Text(stringResource(Res.string.logout_button)) }
     }

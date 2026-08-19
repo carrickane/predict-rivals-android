@@ -33,7 +33,6 @@
     <string name="search_my_tournaments">Пошук моїх турнірів</string>
     <string name="no_tournaments_yet">Ще немає турнірів — створіть або приєднайтеся до одного вище.</string>
     <string name="tournament_players_status">%1$d/%2$d гравців · %3$s</string>
-    <string name="label_current"> · поточний</string>
     <string name="join_code_label">Код приєднання: %1$s</string>
     <string name="action_predictions">Прогнози</string>
     <string name="action_share">Поділитися</string>

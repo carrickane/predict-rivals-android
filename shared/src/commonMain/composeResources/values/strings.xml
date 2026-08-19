@@ -33,7 +33,6 @@
     <string name="search_my_tournaments">Search my tournaments</string>
     <string name="no_tournaments_yet">No tournaments yet — create or join one above.</string>
     <string name="tournament_players_status">%1$d/%2$d players · %3$s</string>
-    <string name="label_current"> · current</string>
     <string name="join_code_label">Join code: %1$s</string>
     <string name="action_predictions">Predictions</string>
     <string name="action_share">Share</string>

@@ -13,15 +13,12 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.balltown.predictrivals.di.CurrentTournamentStore
+import com.balltown.predictrivals.di.SessionStore
 import com.balltown.predictrivals.domain.model.Tournament
 import com.balltown.predictrivals.platform.rememberShareAction
 import com.balltown.predictrivals.res.Res
@@ -42,7 +40,6 @@ import com.balltown.predictrivals.res.action_predictions
 import com.balltown.predictrivals.res.action_share
 import com.balltown.predictrivals.res.action_start_early
 import com.balltown.predictrivals.res.join_code_label
-import com.balltown.predictrivals.res.label_current
 import com.balltown.predictrivals.res.no_tournaments_yet
 import com.balltown.predictrivals.res.search_my_tournaments
 import com.balltown.predictrivals.res.share_invite_message
@@ -56,9 +53,9 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * The Tournament tab: info about the current tournament (owner actions included), plus
- * create/join/search for the rest of "my tournaments". Tapping a tournament makes it current,
- * which is what drives the Calendar/Live/Standings tabs.
+ * The Tournament tab: search + list of "my tournaments". Tapping an item makes it the current
+ * tournament (which is what drives the Calendar/Live/Standings tabs) and expands that same row
+ * in place to show its details and actions — no separate summary card above the list.
  */
 @Composable
 fun TournamentTabScreen(
@@ -67,26 +64,20 @@ fun TournamentTabScreen(
     onOpenPredictions: (Tournament) -> Unit,
     onOpenCurate: (Tournament) -> Unit,
     homeViewModel: HomeViewModel = koinViewModel(),
-    detailViewModel: TournamentDetailViewModel = koinViewModel(),
 ) {
     val currentTournamentStore = koinInject<CurrentTournamentStore>()
     val currentTournamentId by currentTournamentStore.currentTournamentId.collectAsState()
+    val sessionStore = koinInject<SessionStore>()
+    val currentUserId by sessionStore.currentUserId.collectAsState()
+    val shareAction = rememberShareAction()
     var query by remember { mutableStateOf("") }
 
-    LaunchedEffect(currentTournamentId) {
-        currentTournamentId?.let { detailViewModel.load(it) }
-        homeViewModel.refresh()
-    }
-
-    val homeRefreshing by homeViewModel.isRefreshing.collectAsState()
-    val detailRefreshing by detailViewModel.isRefreshing.collectAsState()
+    val state by homeViewModel.state.collectAsState()
+    val isRefreshing by homeViewModel.isRefreshing.collectAsState()
 
     RefreshableScreen(
-        isRefreshing = homeRefreshing || detailRefreshing,
-        onRefresh = {
-            homeViewModel.refresh()
-            currentTournamentId?.let { detailViewModel.refresh(it) }
-        },
+        isRefreshing = isRefreshing,
+        onRefresh = { homeViewModel.refresh() },
         modifier = Modifier.fillMaxSize().safeDrawingPadding(),
     ) {
         Column(
@@ -95,18 +86,6 @@ fun TournamentTabScreen(
         ) {
             Text(stringResource(Res.string.tournament_tab_title), style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.height(16.dp))
-
-            if (currentTournamentId != null) {
-                CurrentTournamentCard(
-                    state = detailViewModel.state.collectAsState().value,
-                    onStartEarly = { currentTournamentId?.let { detailViewModel.startEarly(it) } },
-                    onOpenPredictions = onOpenPredictions,
-                    onOpenCurate = onOpenCurate,
-                )
-                Spacer(Modifier.height(16.dp))
-                HorizontalDivider()
-                Spacer(Modifier.height(16.dp))
-            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = onCreateTournament) { Text(stringResource(Res.string.action_create)) }
@@ -122,7 +101,6 @@ fun TournamentTabScreen(
             )
             Spacer(Modifier.height(8.dp))
 
-            val state by homeViewModel.state.collectAsState()
             when (val current = state) {
                 is HomeUiState.Loading -> CircularProgressIndicator()
                 is HomeUiState.Error -> Text(current.message)
@@ -131,24 +109,17 @@ fun TournamentTabScreen(
                     if (filtered.isEmpty()) {
                         Text(stringResource(Res.string.no_tournaments_yet), textAlign = TextAlign.Center)
                     } else {
-                        val currentSuffix = stringResource(Res.string.label_current)
                         LazyColumn(modifier = Modifier.fillMaxWidth()) {
                             items(filtered) { tournament ->
-                                ListItem(
-                                    headlineContent = { Text(tournament.name, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()) },
-                                    supportingContent = {
-                                        Text(
-                                            stringResource(
-                                                Res.string.tournament_players_status,
-                                                tournament.playerCount,
-                                                tournament.playerLimit,
-                                                tournament.status,
-                                            ) + if (tournament.id == currentTournamentId) currentSuffix else "",
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.fillMaxWidth(),
-                                        )
-                                    },
-                                    modifier = Modifier.padding(vertical = 4.dp).clickable { currentTournamentStore.set(tournament.id) },
+                                TournamentListItem(
+                                    tournament = tournament,
+                                    isCurrent = tournament.id == currentTournamentId,
+                                    isOwner = currentUserId != null && tournament.isOwnedBy(currentUserId!!),
+                                    onClick = { currentTournamentStore.set(tournament.id) },
+                                    onStartEarly = { homeViewModel.startEarly(tournament.id) },
+                                    onOpenPredictions = { onOpenPredictions(tournament) },
+                                    onOpenCurate = { onOpenCurate(tournament) },
+                                    onShare = shareAction,
                                 )
                             }
                         }
@@ -160,50 +131,48 @@ fun TournamentTabScreen(
 }
 
 @Composable
-private fun CurrentTournamentCard(
-    state: TournamentDetailUiState,
+private fun TournamentListItem(
+    tournament: Tournament,
+    isCurrent: Boolean,
+    isOwner: Boolean,
+    onClick: () -> Unit,
     onStartEarly: () -> Unit,
-    onOpenPredictions: (Tournament) -> Unit,
-    onOpenCurate: (Tournament) -> Unit,
+    onOpenPredictions: () -> Unit,
+    onOpenCurate: () -> Unit,
+    onShare: (String) -> Unit,
 ) {
-    val shareAction = rememberShareAction()
-
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            when (state) {
-                is TournamentDetailUiState.Loading -> CircularProgressIndicator()
-                is TournamentDetailUiState.Error -> Text(state.message)
-                is TournamentDetailUiState.Loaded -> {
-                    val tournament = state.tournament
-                    val isOwner = tournament.isOwnedBy(state.currentUserId)
-                    Text(tournament.name, style = MaterialTheme.typography.titleLarge)
-                    Text(
-                        stringResource(
-                            Res.string.tournament_players_status,
-                            tournament.playerCount,
-                            tournament.playerLimit,
-                            tournament.status,
-                        ),
-                    )
-                    Text(stringResource(Res.string.join_code_label, tournament.joinCode))
-                    Spacer(Modifier.height(12.dp))
-                    val shareMessage = stringResource(Res.string.share_invite_message, tournament.name, tournament.joinCode)
+    Column(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+        ListItem(
+            headlineContent = { Text(tournament.name, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()) },
+            supportingContent = {
+                Text(
+                    stringResource(Res.string.tournament_players_status, tournament.playerCount, tournament.playerLimit, tournament.status),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            modifier = Modifier.padding(vertical = 4.dp),
+        )
+        if (isCurrent) {
+            val shareMessage = stringResource(Res.string.share_invite_message, tournament.name, tournament.joinCode)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+            ) {
+                Text(stringResource(Res.string.join_code_label, tournament.joinCode))
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = onOpenPredictions) { Text(stringResource(Res.string.action_predictions)) }
+                    Button(onClick = { onShare(shareMessage) }) { Text(stringResource(Res.string.action_share)) }
+                }
+                if (isOwner && (tournament.isOpen || tournament.isActive)) {
+                    Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = { onOpenPredictions(tournament) }) { Text(stringResource(Res.string.action_predictions)) }
-                        Button(onClick = { shareAction(shareMessage) }) { Text(stringResource(Res.string.action_share)) }
-                    }
-                    if (isOwner && (tournament.isOpen || tournament.isActive)) {
-                        Spacer(Modifier.height(8.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            if (tournament.isOpen) {
-                                Button(onClick = onStartEarly) { Text(stringResource(Res.string.action_start_early)) }
-                            }
-                            if (tournament.isActive) {
-                                Button(onClick = { onOpenCurate(tournament) }) { Text(stringResource(Res.string.action_curate_matches)) }
-                            }
+                        if (tournament.isOpen) {
+                            Button(onClick = onStartEarly) { Text(stringResource(Res.string.action_start_early)) }
+                        }
+                        if (tournament.isActive) {
+                            Button(onClick = onOpenCurate) { Text(stringResource(Res.string.action_curate_matches)) }
                         }
                     }
                 }

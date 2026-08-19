@@ -37,4 +37,17 @@ class HomeViewModel(private val tournamentRepository: TournamentRepository) : Vi
             _isRefreshing.value = false
         }
     }
+
+    /** Starts a tournament early, then reloads the list so its status reflects the change in place. */
+    fun startEarly(tournamentId: Int) {
+        viewModelScope.launch {
+            try {
+                tournamentRepository.start(tournamentId)
+                refresh()
+            } catch (e: ApiException) {
+                // No inline error surface for a single list-item action yet — the tournament
+                // simply stays "open" in the list, matching the unchanged server state.
+            }
+        }
+    }
 }
